@@ -1,0 +1,212 @@
+name: Build and Deploy CheerpX FNF Launcher
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Runs every day at 3:00 AM UTC
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+# Configure permissions for deployment to GitHub Pages
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  # ===============================================================
+  # JOB 1: Build all FNF engine binaries in parallel
+  # ===============================================================
+  build_engines:
+    name: Build ${{ matrix.engine.name }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        engine:
+          - name: 'P-Slice Engine'
+            repo: 'https://github.com/Psych-Slice/P-Slice.git'
+            haxe_version: '4.3.6'
+            install_script: |
+              sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
+              haxelib git flixel https://github.com/Psych-Slice/p-slice-1.0-flixel.git 9b1192a23fcfb456123efa14c63c8506ded20e5e --quiet --skip-dependencies
+              haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git cbf91e2180fd2e374924fe74844086aab7891666 
+              haxelib git flxanimate https://github.com/Psych-Slice/FlxAnimate.git 82a720663f9ed6328d91a727c2b17501d91e3b11 --skip-dependencies
+              haxelib git funkin.vis https://github.com/FunkinCrew/funkVis 22b1ce089dd924f15cdc4632397ef3504d464e90 --skip-dependencies
+              haxelib git hxcpp https://github.com/Psych-Slice/hxcpp.git e48576506a270237ec2ec6501c0bedbd03034af1 --quiet --skip-dependencies
+              haxelib git openfl https://github.com/FunkinCrew/openfl.git c4fa1dcfc384f07bb537e08cae671f9507fe49e6 --quiet --skip-dependencies
+              haxelib git lime https://github.com/Psych-Slice/lime-pslice.git 160f0e0da13b7b9600aca950ae7db30167fafc9b --quiet
+              haxelib install flixel-addons 3.3.2 --quiet --skip-dependencies
+              haxelib install flixel-tools 1.5.1 --quiet --skip-dependencies
+              haxelib install hscript-iris 1.1.3 --quiet --skip-dependencies
+              haxelib install tjson 1.4.0 --quiet --skip-dependencies
+              haxelib install hxdiscord_rpc 1.2.4 --quiet --skip-dependencies
+              haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git 0a51aed0d9523d22a83e453ce7b593ec7fed4742 --skip-dependencies
+              haxelib git linc_luajit https://github.com/superpowers04/linc_luajit 1906c4a96f6bb6df66562b3f24c62f4c5bba14a7 --skip-dependencies
+            build_command: 'lime build linux -final --32'
+
+          - name: 'V-Slice (Funkin)'
+            repo: 'https://github.com/FunkinCrew/Funkin.git'
+            haxe_version: '4.3.6'
+            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib install hmm --quiet && haxelib run hmm install -q'
+            build_command: 'lime build linux --32'
+
+          - name: 'Codename Engine'
+            repo: 'https://github.com/CodenameCrew/CodenameEngine.git'
+            haxe_version: '4.3.7'
+            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxe -cp commandline -D analyzer-optimize --run Main setup -s'
+            build_command: 'lime build linux --32'
+
+          - name: 'NovaFlare Engine'
+            repo: 'https://github.com/NovaFlare-Engine-Concentration/FNF-NovaFlare-Engine.git'
+            haxe_version: '4.3.7'
+            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib install hmm && haxelib run hmm install'
+            build_command: 'lime build linux --32'
+              
+          - name: 'Psych Online'
+            repo: 'https://github.com/Snirozu/Funkin-Psych-Online.git'
+            haxe_version: '4.3.7'
+            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib install hmm --quiet && haxelib run hmm install'
+            build_command: 'lime build Project.xml linux --32'
+              
+          - name: 'Shadow Engine'
+            repo: 'https://github.com/FNF-SE/FNF-Shadow-Engine.git'
+            haxe_version: '4.3.7'
+            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib git hmm https://github.com/FNF-SE/hmm --skip-dependencies --quiet && haxelib run hmm install --quiet'
+            build_command: 'lime build linux --32'
+
+          - name: 'Psych Engine 1.0.4'
+            repo: 'https://github.com/ShadowMario/FNF-PsychEngine.git'
+            git_ref: 'v1.0.4'
+            haxe_version: '4.3.2'
+            install_script: |
+              haxelib set flixel 5.6.1; haxelib set flixel-addons 3.2.2; haxelib set flixel-tools 1.5.1; haxelib set hxvlc 2.0.1; haxelib set lime 8.1.2; haxelib set openfl 9.3.3; haxelib set tjson 1.4.0; haxelib set hxdiscord_rpc 1.2.4; haxelib set hxcpp-debug-server 1.2.4
+              haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate 768740a56b26aa0c072720e0d1236b94afe68e3e
+              haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git
+              haxelib git funkin.vis https://github.com/FunkinCrew/funkVis 22b1ce089dd924f15cdc4632397ef3504d464e90
+              haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git cbf91e2180fd2e374924fe74844086aab7891666
+            build_command: 'lime build linux --32'
+
+          - name: 'Psych Engine 0.7.3'
+            repo: 'https://github.com/ShadowMario/FNF-PsychEngine.git'
+            git_ref: 'v0.7.3'
+            haxe_version: '4.3.2'
+            install_script: 'haxelib set flixel 5.5.0; haxelib set flixel-addons 3.2.1; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib git flxanimate https://github.com/ShadowMario/flxanimate dev; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib git hxdiscord_rpc https://github.com/MAJigsaw77/hxdiscord_rpc.git; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.3.2; haxelib git SScript https://github.com/Honton129/SScript-archive; haxelib set tjson 1.4.0'
+            build_command: 'lime build linux --32'
+
+          - name: 'Psych Engine 0.6.3'
+            repo: 'https://github.com/ShadowMario/FNF-PsychEngine.git'
+            git_ref: 'v0.6.3'
+            haxe_version: '4.2.5'
+            install_script: 'haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc.git; haxelib set flixel-addons 3.0.2; haxelib set flixel-demos 2.9.0; haxelib set flixel-templates 2.6.6; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib set flixel 5.2.2; haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate 3.0.4; haxelib set hscript 2.5.0; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib set lime-samples 7.0.0; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.2.1'
+            build_command: 'lime build linux --32'
+    
+    steps:
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.engine.haxe_version }}
+
+      - name: Install Dependencies
+        run: |
+          haxelib setup ~/haxelib
+          ${{ matrix.engine.install_script }}
+        
+      - name: Clone Engine Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.engine.repo }}
+          ref: ${{ matrix.engine.git_ref || 'main' }}
+          path: 'engine'
+          submodules: 'recursive'
+
+      - name: Build Engine
+        working-directory: ./engine
+        run: haxelib run ${{ matrix.engine.build_command }}
+      
+      - name: Upload Engine Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.engine.name }}
+          path: engine/export/release/linux/bin/
+          if-no-files-found: error
+
+  # ===============================================================
+  # JOB 2: Package the CheerpX disk image with the compiled engines
+  # ===============================================================
+  package_disk_image:
+    name: Package CheerpX Disk Image
+    needs: build_engines
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Project Files
+        uses: actions/checkout@v4
+
+      - name: Install Build Tools
+        run: sudo apt-get update && sudo apt-get install -y podman buildah
+
+      - name: Download All Engine Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./downloaded_engines
+
+      - name: Populate Filesystem Directory
+        run: |
+          mkdir -p image/cheerpXFS/usr/local/bin/
+          echo "Copying compiled engines..."
+          for engine_artifact_dir in ./downloaded_engines/*; do
+            engine_name=$(basename "$engine_artifact_dir")
+            echo "  - Copying ${engine_name}"
+            # The executable and assets are inside the artifact dir
+            cp -r "${engine_artifact_dir}" "image/cheerpXFS/usr/local/bin/${engine_name}"
+          done
+          echo "Filesystem populated."
+          ls -R image/cheerpXFS/usr/local/bin/
+
+      - name: Build CheerpX ext2 Image
+        run: |
+          chmod +x ./image/build_image.sh
+          cd ./image
+          ./build_image.sh
+      
+      - name: Upload Site for Deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: gh-pages-site
+          path: |
+            index.html
+            script.js
+            cheerpXImage.ext2
+          if-no-files-found: error
+
+  # ===============================================================
+  # JOB 3: Deploy the final site to GitHub Pages
+  # ===============================================================
+  deploy_pages:
+    name: Deploy to GitHub Pages
+    needs: package_disk_image
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Download Site Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gh-pages-site
+      
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
