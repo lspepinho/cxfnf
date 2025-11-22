@@ -2,22 +2,18 @@ name: Build and Deploy CheerpX FNF Launcher
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Runs every day at 3:00 AM UTC
+    - cron: '0 3 * * *'
   push:
     branches:
       - main
       - master
   workflow_dispatch:
 
-# Configure permissions for deployment to GitHub Pages
 permissions:
   pages: write
   id-token: write
 
 jobs:
-  # ===============================================================
-  # JOB 1: Build all FNF engine binaries in parallel
-  # ===============================================================
   build_engines:
     name: Build ${{ matrix.engine.name }}
     runs-on: ubuntu-latest
@@ -27,7 +23,7 @@ jobs:
       matrix:
         engine:
           - name: 'P-Slice Engine'
-            repo: 'https://github.com/Psych-Slice/P-Slice.git'
+            repo: 'Psych-Slice/P-Slice'
             haxe_version: '4.3.6'
             install_script: |
               sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
@@ -45,40 +41,54 @@ jobs:
               haxelib install hxdiscord_rpc 1.2.4 --quiet --skip-dependencies
               haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git 0a51aed0d9523d22a83e453ce7b593ec7fed4742 --skip-dependencies
               haxelib git linc_luajit https://github.com/superpowers04/linc_luajit 1906c4a96f6bb6df66562b3f24c62f4c5bba14a7 --skip-dependencies
-            build_command: 'lime build linux -final --32'
+            build_command: 'haxelib run lime build linux -final --32'
 
           - name: 'V-Slice (Funkin)'
-            repo: 'https://github.com/FunkinCrew/Funkin.git'
+            repo: 'FunkinCrew/Funkin'
             haxe_version: '4.3.6'
-            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib install hmm --quiet && haxelib run hmm install -q'
-            build_command: 'lime build linux --32'
+            install_script: |
+              sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
+              haxelib install hmm --quiet
+              haxelib run hmm install -q
+            build_command: 'haxelib run lime build linux --32'
 
           - name: 'Codename Engine'
-            repo: 'https://github.com/CodenameCrew/CodenameEngine.git'
+            repo: 'CodenameCrew/CodenameEngine'
             haxe_version: '4.3.7'
-            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxe -cp commandline -D analyzer-optimize --run Main setup -s'
-            build_command: 'lime build linux --32'
+            install_script: |
+              sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
+              haxe -cp commandline -D analyzer-optimize --run Main setup -s
+            build_command: 'haxelib run lime build linux --32'
 
           - name: 'NovaFlare Engine'
-            repo: 'https://github.com/NovaFlare-Engine-Concentration/FNF-NovaFlare-Engine.git'
+            repo: 'NovaFlare-Engine-Concentration/FNF-NovaFlare-Engine'
             haxe_version: '4.3.7'
-            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib install hmm && haxelib run hmm install'
-            build_command: 'lime build linux --32'
+            install_script: |
+              sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
+              haxelib install hmm
+              haxelib run hmm install
+            build_command: 'haxelib run lime build linux --32'
               
           - name: 'Psych Online'
-            repo: 'https://github.com/Snirozu/Funkin-Psych-Online.git'
+            repo: 'Snirozu/Funkin-Psych-Online'
             haxe_version: '4.3.7'
-            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib install hmm --quiet && haxelib run hmm install'
-            build_command: 'lime build Project.xml linux --32'
+            install_script: |
+              sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
+              haxelib install hmm --quiet
+              haxelib run hmm install
+            build_command: 'haxelib run lime build Project.xml linux --32'
               
           - name: 'Shadow Engine'
-            repo: 'https://github.com/FNF-SE/FNF-Shadow-Engine.git'
+            repo: 'FNF-SE/FNF-Shadow-Engine'
             haxe_version: '4.3.7'
-            install_script: 'sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev && haxelib git hmm https://github.com/FNF-SE/hmm --skip-dependencies --quiet && haxelib run hmm install --quiet'
-            build_command: 'lime build linux --32'
+            install_script: |
+              sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
+              haxelib git hmm https://github.com/FNF-SE/hmm --skip-dependencies --quiet
+              haxelib run hmm install --quiet
+            build_command: 'haxelib run lime build linux --32'
 
           - name: 'Psych Engine 1.0.4'
-            repo: 'https://github.com/ShadowMario/FNF-PsychEngine.git'
+            repo: 'ShadowMario/FNF-PsychEngine'
             git_ref: 'v1.0.4'
             haxe_version: '4.3.2'
             install_script: |
@@ -87,32 +97,29 @@ jobs:
               haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git
               haxelib git funkin.vis https://github.com/FunkinCrew/funkVis 22b1ce089dd924f15cdc4632397ef3504d464e90
               haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git cbf91e2180fd2e374924fe74844086aab7891666
-            build_command: 'lime build linux --32'
+            build_command: 'haxelib run lime build linux --32'
 
           - name: 'Psych Engine 0.7.3'
-            repo: 'https://github.com/ShadowMario/FNF-PsychEngine.git'
+            repo: 'ShadowMario/FNF-PsychEngine'
             git_ref: 'v0.7.3'
             haxe_version: '4.3.2'
-            install_script: 'haxelib set flixel 5.5.0; haxelib set flixel-addons 3.2.1; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib git flxanimate https://github.com/ShadowMario/flxanimate dev; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib git hxdiscord_rpc https://github.com/MAJigsaw77/hxdiscord_rpc.git; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.3.2; haxelib git SScript https://github.com/Honton129/SScript-archive; haxelib set tjson 1.4.0'
-            build_command: 'lime build linux --32'
+            install_script: |
+              haxelib set flixel 5.5.0; haxelib set flixel-addons 3.2.1; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib git flxanimate https://github.com/ShadowMario/flxanimate dev; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib git hxdiscord_rpc https://github.com/MAJigsaw77/hxdiscord_rpc.git; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.3.2; haxelib git SScript https://github.com/Honton129/SScript-archive; haxelib set tjson 1.4.0
+            build_command: 'haxelib run lime build linux --32'
 
           - name: 'Psych Engine 0.6.3'
-            repo: 'https://github.com/ShadowMario/FNF-PsychEngine.git'
+            repo: 'ShadowMario/FNF-PsychEngine'
             git_ref: 'v0.6.3'
             haxe_version: '4.2.5'
-            install_script: 'haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc.git; haxelib set flixel-addons 3.0.2; haxelib set flixel-demos 2.9.0; haxelib set flixel-templates 2.6.6; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib set flixel 5.2.2; haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate 3.0.4; haxelib set hscript 2.5.0; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib set lime-samples 7.0.0; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.2.1'
-            build_command: 'lime build linux --32'
+            install_script: |
+              haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc.git; haxelib set flixel-addons 3.0.2; haxelib set flixel-demos 2.9.0; haxelib set flixel-templates 2.6.6; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib set flixel 5.2.2; haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate 3.0.4; haxelib set hscript 2.5.0; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib set lime-samples 7.0.0; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.2.1
+            build_command: 'haxelib run lime build linux --32'
     
     steps:
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
         with:
           haxe-version: ${{ matrix.engine.haxe_version }}
-
-      - name: Install Dependencies
-        run: |
-          haxelib setup ~/haxelib
-          ${{ matrix.engine.install_script }}
         
       - name: Clone Engine Repository
         uses: actions/checkout@v4
@@ -122,9 +129,15 @@ jobs:
           path: 'engine'
           submodules: 'recursive'
 
-      - name: Build Engine
+      - name: Install Dependencies
+        run: |
+          haxelib setup ~/haxelib
+          ${{ matrix.engine.install_script }}
         working-directory: ./engine
-        run: haxelib run ${{ matrix.engine.build_command }}
+
+      - name: Build Engine
+        run: ${{ matrix.engine.build_command }}
+        working-directory: ./engine
       
       - name: Upload Engine Artifact
         uses: actions/upload-artifact@v4
@@ -133,9 +146,6 @@ jobs:
           path: engine/export/release/linux/bin/
           if-no-files-found: error
 
-  # ===============================================================
-  # JOB 2: Package the CheerpX disk image with the compiled engines
-  # ===============================================================
   package_disk_image:
     name: Package CheerpX Disk Image
     needs: build_engines
@@ -159,11 +169,11 @@ jobs:
           echo "Copying compiled engines..."
           for engine_artifact_dir in ./downloaded_engines/*; do
             engine_name=$(basename "$engine_artifact_dir")
-            echo "  - Copying ${engine_name}"
-            # The executable and assets are inside the artifact dir
-            cp -r "${engine_artifact_dir}" "image/cheerpXFS/usr/local/bin/${engine_name}"
+            echo "  - Populating /usr/local/bin/${engine_name}"
+            # The executable and assets are inside the artifact dir, move them
+            mv "${engine_artifact_dir}" "image/cheerpXFS/usr/local/bin/${engine_name}"
           done
-          echo "Filesystem populated."
+          echo "Filesystem populated. Final structure:"
           ls -R image/cheerpXFS/usr/local/bin/
 
       - name: Build CheerpX ext2 Image
@@ -172,19 +182,20 @@ jobs:
           cd ./image
           ./build_image.sh
       
+      - name: Create Artifact for Deployment
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp script.js _site/
+          cp cheerpXImage.ext2 _site/
+      
       - name: Upload Site for Deployment
         uses: actions/upload-artifact@v4
         with:
           name: gh-pages-site
-          path: |
-            index.html
-            script.js
-            cheerpXImage.ext2
+          path: _site/
           if-no-files-found: error
 
-  # ===============================================================
-  # JOB 3: Deploy the final site to GitHub Pages
-  # ===============================================================
   deploy_pages:
     name: Deploy to GitHub Pages
     needs: package_disk_image
@@ -198,6 +209,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: gh-pages-site
+          path: .
       
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
