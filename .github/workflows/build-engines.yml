@@ -24,6 +24,7 @@ jobs:
         engine:
           - name: 'P-Slice Engine'
             repo: 'Psych-Slice/P-Slice'
+            # No specific git_ref, so let checkout determine the default branch.
             haxe_version: '4.3.6'
             install_script: |
               sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
@@ -41,51 +42,56 @@ jobs:
               haxelib install hxdiscord_rpc 1.2.4 --quiet --skip-dependencies
               haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git 0a51aed0d9523d22a83e453ce7b593ec7fed4742 --skip-dependencies
               haxelib git linc_luajit https://github.com/superpowers04/linc_luajit 1906c4a96f6bb6df66562b3f24c62f4c5bba14a7 --skip-dependencies
-            build_command: 'haxelib run lime build linux -final --32'
+            build_command: 'lime build linux -final -32'
 
           - name: 'V-Slice (Funkin)'
             repo: 'FunkinCrew/Funkin'
+            # Default branch is 'master' for V-Slice.
             haxe_version: '4.3.6'
             install_script: |
               sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
               haxelib install hmm --quiet
               haxelib run hmm install -q
-            build_command: 'haxelib run lime build linux --32'
+            build_command: 'lime build linux -32'
 
           - name: 'Codename Engine'
             repo: 'CodenameCrew/CodenameEngine'
+            # Default branch for Codename.
             haxe_version: '4.3.7'
             install_script: |
               sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
               haxe -cp commandline -D analyzer-optimize --run Main setup -s
-            build_command: 'haxelib run lime build linux --32'
+            build_command: 'lime build linux -32'
 
           - name: 'NovaFlare Engine'
             repo: 'NovaFlare-Engine-Concentration/FNF-NovaFlare-Engine'
+            # Default branch for NovaFlare.
             haxe_version: '4.3.7'
             install_script: |
               sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
               haxelib install hmm
               haxelib run hmm install
-            build_command: 'haxelib run lime build linux --32'
+            build_command: 'lime build linux -32'
               
           - name: 'Psych Online'
             repo: 'Snirozu/Funkin-Psych-Online'
+            # Default branch for Psych Online.
             haxe_version: '4.3.7'
             install_script: |
               sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
               haxelib install hmm --quiet
               haxelib run hmm install
-            build_command: 'haxelib run lime build Project.xml linux --32'
+            build_command: 'lime build Project.xml linux -32'
               
           - name: 'Shadow Engine'
             repo: 'FNF-SE/FNF-Shadow-Engine'
+            # Default branch for Shadow Engine.
             haxe_version: '4.3.7'
             install_script: |
               sudo apt-get update && sudo apt-get install -y libvlc-dev libvlccore-dev
               haxelib git hmm https://github.com/FNF-SE/hmm --skip-dependencies --quiet
               haxelib run hmm install --quiet
-            build_command: 'haxelib run lime build linux --32'
+            build_command: 'lime build linux -32'
 
           - name: 'Psych Engine 1.0.4'
             repo: 'ShadowMario/FNF-PsychEngine'
@@ -97,7 +103,7 @@ jobs:
               haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git
               haxelib git funkin.vis https://github.com/FunkinCrew/funkVis 22b1ce089dd924f15cdc4632397ef3504d464e90
               haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git cbf91e2180fd2e374924fe74844086aab7891666
-            build_command: 'haxelib run lime build linux --32'
+            build_command: 'haxelib run lime build linux -32'
 
           - name: 'Psych Engine 0.7.3'
             repo: 'ShadowMario/FNF-PsychEngine'
@@ -105,7 +111,7 @@ jobs:
             haxe_version: '4.3.2'
             install_script: |
               haxelib set flixel 5.5.0; haxelib set flixel-addons 3.2.1; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib git flxanimate https://github.com/ShadowMario/flxanimate dev; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib git hxdiscord_rpc https://github.com/MAJigsaw77/hxdiscord_rpc.git; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.3.2; haxelib git SScript https://github.com/Honton129/SScript-archive; haxelib set tjson 1.4.0
-            build_command: 'haxelib run lime build linux --32'
+            build_command: 'haxelib run lime build linux -32'
 
           - name: 'Psych Engine 0.6.3'
             repo: 'ShadowMario/FNF-PsychEngine'
@@ -113,9 +119,14 @@ jobs:
             haxe_version: '4.2.5'
             install_script: |
               haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc.git; haxelib set flixel-addons 3.0.2; haxelib set flixel-demos 2.9.0; haxelib set flixel-templates 2.6.6; haxelib set flixel-tools 1.5.1; haxelib set flixel-ui 2.5.0; haxelib set flixel 5.2.2; haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate 3.0.4; haxelib set hscript 2.5.0; haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git; haxelib set lime-samples 7.0.0; haxelib set lime 8.0.1; haxelib git linc_luajit https://github.com/superpowers04/linc_luajit.git; haxelib set openfl 9.2.1
-            build_command: 'haxelib run lime build linux --32'
+            build_command: 'haxelib run lime build linux -32'
     
     steps:
+      - name: Checkout Project Files
+        uses: actions/checkout@v4
+        with:
+          path: './' # Checkout the current repo to access the image/ directory
+
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
         with:
@@ -125,11 +136,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ matrix.engine.repo }}
-          ref: ${{ matrix.engine.git_ref || 'main' }}
+          ref: ${{ matrix.engine.git_ref }} # Let actions/checkout determine the default branch if git_ref is empty
           path: 'engine'
           submodules: 'recursive'
 
-      - name: Install Dependencies
+      - name: Install Build Dependencies (Haxelib & apt)
         run: |
           haxelib setup ~/haxelib
           ${{ matrix.engine.install_script }}
