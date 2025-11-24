@@ -26,6 +26,7 @@ jobs:
             repo: 'Psych-Slice/P-Slice'
             haxe_version: '4.3.6'
             install_script: |
+              sudo dpkg --add-architecture i386
               sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386
               haxelib git flixel https://github.com/Psych-Slice/p-slice-1.0-flixel.git 9b1192a23fcfb456123efa14c63c8506ded20e5e --quiet --skip-dependencies
               haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git cbf91e2180fd2e374924fe74844086aab7891666 
@@ -48,25 +49,25 @@ jobs:
           - name: 'V-Slice (Funkin)'
             repo: 'FunkinCrew/Funkin'
             haxe_version: '4.3.6'
-            install_script: 'sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxelib install hmm --quiet && yes | haxelib run hmm install -q'
+            install_script: 'sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxelib install hmm --quiet && yes | haxelib run hmm install -q'
             build_command: 'haxelib run lime build linux -32'
 
           - name: 'Codename Engine'
             repo: 'CodenameCrew/CodenameEngine'
             haxe_version: '4.3.7'
-            install_script: 'sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxe -cp commandline -D analyzer-optimize --run Main setup -s'
+            install_script: 'sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxe -cp commandline -D analyzer-optimize --run Main setup -s'
             build_command: 'haxelib run lime build linux -32'
               
           - name: 'Psych Online'
             repo: 'Snirozu/Funkin-Psych-Online'
             haxe_version: '4.3.7'
-            install_script: 'sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxelib install hmm --quiet && haxelib run hmm install'
+            install_script: 'sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxelib install hmm --quiet && haxelib run hmm install'
             build_command: 'haxelib run lime build Project.xml linux -32'
               
           - name: 'Shadow Engine'
             repo: 'FNF-SE/FNF-Shadow-Engine'
             haxe_version: '4.3.7'
-            install_script: 'sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxelib git hmm https://github.com/FNF-SE/hmm --skip-dependencies --quiet && haxelib run hmm install --quiet'
+            install_script: 'sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y g++-multilib libvlc-dev:i386 libvlccore-dev:i386 && haxelib git hmm https://github.com/FNF-SE/hmm --skip-dependencies --quiet && haxelib run hmm install --quiet'
             build_command: 'haxelib run lime build linux -32'
 
           - name: 'Psych Engine 1.0.4'
